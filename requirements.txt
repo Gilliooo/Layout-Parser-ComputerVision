@@ -1,0 +1,11 @@
+streamlit>=1.30
+numpy>=1.23
+opencv-python>=4.8
+Pillow>=9.5
+tensorflow>=2.12
+torch>=2.0
+torchvision>=0.15
+doclayout-yolo
+huggingface-hub
+scikit-image>=0.20
+imutils>=0.5
