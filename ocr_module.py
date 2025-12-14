@@ -18,7 +18,7 @@ def _predict_char(model, classes, roi_gray):
     roi = cv2.resize(roi, (IMG_SIZE, IMG_SIZE), interpolation=cv2.INTER_CUBIC)
 
     x = roi.astype("float32") / 255.0
-    x = np.expand_dims(x, axis=-1)      # (32,32,1)
+    x = np.expand_dims(x, axis=-1)
     x = x.reshape(1, IMG_SIZE, IMG_SIZE, 1)
 
     probs = model.predict(x, verbose=0)[0]
@@ -35,12 +35,6 @@ def ocr_char_level(
     conf_threshold=0.0,
     return_debug=False
 ):
-    """
-    Contour-based character segmentation + classifier.
-    Returns:
-      - text (str)
-      - (text, debug_img_bgr) if return_debug=True
-    """
 
     if bgr_image is None or bgr_image.size == 0:
         return ("", None) if return_debug else ""

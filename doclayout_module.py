@@ -2,7 +2,6 @@
 from dataclasses import dataclass
 from typing import List, Tuple
 import numpy as np
-
 from huggingface_hub import hf_hub_download
 from doclayout_yolo import YOLOv10
 
@@ -18,9 +17,7 @@ def load_doclayout_model(
     repo_id="juliozhao/DocLayout-YOLO-DocStructBench",
     filename="doclayout_yolo_docstructbench_imgsz1024.pt",
 ):
-    """
-    Downloads (once) and loads pretrained DocLayout-YOLO model
-    """
+
     weights_path = hf_hub_download(
         repo_id=repo_id,
         filename=filename
@@ -36,9 +33,7 @@ def detect_layout_doclayout(
     imgsz: int = 1024,
     device: str = "cpu",
 ) -> List[Block]:
-    """
-    Runs layout detection and returns blocks sorted top-to-bottom.
-    """
+
     results = model.predict(
         rgb_image,
         conf=conf,
