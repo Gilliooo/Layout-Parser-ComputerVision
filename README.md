@@ -65,8 +65,20 @@ This repo is already set up to deploy as a live website on [Streamlit Community 
    - **Repository:** `Gilliooo/Layout-Parser-ComputerVision`
    - **Branch:** `main`
    - **Main file path:** `app.py`
-4. Open **Advanced settings** and set **Python version** to **3.12** (or 3.11).
+4. Open **Advanced settings** and set **Python version** to **3.12**. ⚠️ **This is required** — leaving it on the default (currently Python 3.14) breaks the build because TensorFlow has no 3.14 wheels yet. Use **3.12** (3.11 or 3.13 also work; do **not** use 3.14).
 5. Click **Deploy**. The first build takes a few minutes while it installs the dependencies and the first DocLayout-YOLO run downloads the ~100 MB weights.
+
+### Already deployed and stuck on Python 3.14?
+
+If you created the app before pinning the version, the build will fail with
+`Could not find a version that satisfies the requirement tensorflow-cpu`.
+Fix it without recreating the app:
+
+1. Open the app → **Manage app** (bottom-right) → **⚙️ Settings** → **General**.
+2. Set **Python version** to **3.12** → **Save**.
+3. **Reboot app** from the same menu.
+
+(If the dropdown isn't available for an existing app, delete the app and redeploy, setting Python 3.12 in **Advanced settings** during creation.)
 
 ### What makes it cloud-ready
 
