@@ -30,16 +30,17 @@ st.markdown(
 
       /* hero header */
       .hero {
-          background: linear-gradient(135deg, #0b1f16 0%, #0e2a1c 55%, #14532d 100%);
-          border: 1px solid #1f6f43;
+          background: #000000;
+          border: 1px solid #22c55e;
           padding: 2.2rem 2.4rem;
           border-radius: 18px;
           color: #e6f4ea;
           margin-bottom: 1.4rem;
-          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
       }
       .hero h1 { color:#f4fff8; margin:0 0 .4rem 0; font-size: 2.1rem; line-height:1.15; }
       .hero p  { color: rgba(230,244,234,0.85); margin:0; font-size: 1.02rem; }
+      .hero h1 b, .hero p b { color:#22c55e; }
 
       .badge {
           display:inline-block; background: rgba(34,197,94,0.15);
@@ -371,7 +372,7 @@ else:
                     st.image(item["image"], use_container_width=True)
 
 st.markdown(
-    '<div class="footer">Built with DocLayout-YOLO + a custom Keras OCR model · '
-    'Deployed on Streamlit Community Cloud</div>',
+    '<div class="footer">Built with DocLayout-YOLO and a custom Keras OCR model. '
+    'Deployed on Streamlit Community Cloud.</div>',
     unsafe_allow_html=True,
 )
