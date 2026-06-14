@@ -1,11 +1,24 @@
-streamlit>=1.30
-numpy>=1.23
-opencv-python>=4.8
-Pillow>=9.5
-tensorflow>=2.12
-torch>=2.0
-torchvision>=0.15
-doclayout-yolo
-huggingface-hub
-scikit-image>=0.20
-imutils>=0.5
+# Pull PyTorch from the CPU-only index so Streamlit Cloud doesn't try to
+# download the multi-GB CUDA wheels (they blow past the cloud disk/RAM limits).
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Web app
+streamlit==1.57.0
+
+# Core
+numpy==2.4.4
+Pillow==12.2.0
+opencv-python==4.13.0.92
+
+# Deep learning (CPU-only builds)
+tensorflow-cpu==2.21.0
+torch==2.11.0+cpu
+torchvision==0.26.0+cpu
+
+# Layout detection
+doclayout-yolo==0.0.4
+huggingface-hub==1.12.0
+
+# Image processing
+scikit-image==0.26.0
+imutils==0.5.4

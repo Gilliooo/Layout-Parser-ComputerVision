@@ -55,6 +55,28 @@ python -m streamlit run app.py
 
 On first run with **DocLayout-YOLO** mode selected, the model weights (~100 MB) are automatically downloaded from Hugging Face and cached locally.
 
+## Deploy to Streamlit Community Cloud
+
+This repo is already set up to deploy as a live website on [Streamlit Community Cloud](https://share.streamlit.io) (free).
+
+1. Push this repo to GitHub (it already lives at `Gilliooo/Layout-Parser-ComputerVision`).
+2. Go to **[share.streamlit.io](https://share.streamlit.io)** and sign in with GitHub.
+3. Click **Create app → Deploy a public app from GitHub** and fill in:
+   - **Repository:** `Gilliooo/Layout-Parser-ComputerVision`
+   - **Branch:** `main`
+   - **Main file path:** `app.py`
+4. Open **Advanced settings** and set **Python version** to **3.12** (or 3.11).
+5. Click **Deploy**. The first build takes a few minutes while it installs the dependencies and the first DocLayout-YOLO run downloads the ~100 MB weights.
+
+### What makes it cloud-ready
+
+- **`requirements.txt`** pins CPU-only `torch`/`torchvision` (via the PyTorch CPU index) and `tensorflow-cpu` so the build fits within Streamlit Cloud's disk/RAM limits.
+- **`packages.txt`** installs `libgl1` + `libglib2.0-0`, the system libraries OpenCV needs on the headless Linux runners.
+- **`.streamlit/config.toml`** sets the theme and a 20 MB upload limit.
+- The app shows detailed **loading screens** (boot overlay → model warm-up → per-region progress) so users always see what's happening during the slow steps.
+
+> **Note on resources:** the free tier runs TensorFlow + PyTorch together, which is memory-heavy. If the app gets killed for exceeding memory, use **No layout** mode (skips the YOLO model) or upgrade the Streamlit Cloud resources.
+
 ## Notes
 
 - `handwriting_recognition_model.keras` and `classes.json` are included in the repo — no manual download needed.
