@@ -16,7 +16,6 @@ from ocr_module import (load_handwriting_model,load_classes, ocr_char_level,
 # ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="Handwritten Notes to Structured Text",
-    page_icon="📝",
     layout="wide",
 )
 
@@ -24,41 +23,48 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+      /* hide the anchor "link" icon / clickable button next to headings */
+      [data-testid="stHeaderActionElements"] { display: none !important; }
+      h1 > a, h2 > a, h3 > a, h4 > a, h5 > a, h6 > a,
+      .stMarkdown a.anchor-link { display: none !important; }
+
       /* hero header */
       .hero {
-          background: linear-gradient(120deg, #6C5CE7 0%, #8E7BFF 50%, #00C2A8 100%);
+          background: linear-gradient(135deg, #0b1f16 0%, #0e2a1c 55%, #14532d 100%);
+          border: 1px solid #1f6f43;
           padding: 2.2rem 2.4rem;
           border-radius: 18px;
-          color: #ffffff;
+          color: #e6f4ea;
           margin-bottom: 1.4rem;
-          box-shadow: 0 10px 30px rgba(108, 92, 231, 0.25);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
       }
-      .hero h1 { color:#fff; margin:0 0 .4rem 0; font-size: 2.1rem; line-height:1.15; }
-      .hero p  { color: rgba(255,255,255,0.92); margin:0; font-size: 1.02rem; }
+      .hero h1 { color:#f4fff8; margin:0 0 .4rem 0; font-size: 2.1rem; line-height:1.15; }
+      .hero p  { color: rgba(230,244,234,0.85); margin:0; font-size: 1.02rem; }
 
       .badge {
-          display:inline-block; background: rgba(255,255,255,0.18);
+          display:inline-block; background: rgba(34,197,94,0.15);
+          border: 1px solid rgba(34,197,94,0.35); color:#7ee2a8;
           padding: .25rem .7rem; border-radius: 999px; font-size:.8rem;
-          margin-right:.4rem; margin-top:.7rem; backdrop-filter: blur(4px);
+          margin-right:.4rem; margin-top:.7rem;
       }
 
       /* full-screen loading overlay */
       #boot-overlay {
           position: fixed; inset: 0; z-index: 9999;
-          background: linear-gradient(120deg, #6C5CE7 0%, #00C2A8 100%);
+          background: linear-gradient(135deg, #08130d 0%, #0e2a1c 100%);
           display:flex; flex-direction:column; align-items:center; justify-content:center;
-          color:#fff; font-family: sans-serif; transition: opacity .4s ease;
+          color:#e6f4ea; font-family: sans-serif; transition: opacity .4s ease;
       }
       #boot-overlay .spinner {
-          width: 54px; height: 54px; border: 5px solid rgba(255,255,255,.35);
-          border-top-color:#fff; border-radius:50%; animation: spin 0.9s linear infinite;
+          width: 54px; height: 54px; border: 5px solid rgba(34,197,94,.25);
+          border-top-color:#22c55e; border-radius:50%; animation: spin 0.9s linear infinite;
           margin-bottom: 1.1rem;
       }
-      #boot-overlay h2 { margin:.2rem 0; font-weight:700; }
-      #boot-overlay p  { margin:.15rem 0; opacity:.9; font-size:.92rem; }
+      #boot-overlay h2 { margin:.2rem 0; font-weight:700; color:#f4fff8; }
+      #boot-overlay p  { margin:.15rem 0; opacity:.85; font-size:.92rem; }
       @keyframes spin { to { transform: rotate(360deg); } }
 
-      .footer { color:#8a86a0; font-size:.82rem; text-align:center; margin-top:2.5rem; }
+      .footer { color:#5b6b60; font-size:.82rem; text-align:center; margin-top:2.5rem; }
       .stCodeBlock { border-radius: 12px; }
     </style>
     """,
@@ -67,15 +73,15 @@ st.markdown(
 
 # A boot overlay that shows while Streamlit downloads the page / spins up the
 # server. It self-removes once the script has rendered (so the user always sees
-# *something* with detail instead of a blank screen on a cold start).
+# something with detail instead of a blank screen on a cold start).
 boot_overlay = st.empty()
 boot_overlay.markdown(
     """
     <div id="boot-overlay">
       <div class="spinner"></div>
-      <h2>Starting the app…</h2>
+      <h2>Starting the app...</h2>
       <p>Booting the Streamlit server and importing the vision libraries.</p>
-      <p>The first cold start can take ~30–60s — hang tight.</p>
+      <p>The first cold start can take ~30-60s, hang tight.</p>
     </div>
     """,
     unsafe_allow_html=True,
@@ -85,7 +91,7 @@ boot_overlay.markdown(
 st.markdown(
     """
     <div class="hero">
-      <h1>📝 Handwritten Notes → Structured Text</h1>
+      <h1>Handwritten Notes to Structured Text</h1>
       <p>Upload a photo of handwritten notes. We detect the layout (titles, paragraphs, lists)
          with <b>DocLayout-YOLO</b>, then read each region with a custom character-level OCR model
          and rebuild it as clean Markdown.</p>
@@ -97,7 +103,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# The page has rendered — clear the boot overlay.
+# The page has rendered, clear the boot overlay.
 boot_overlay.empty()
 
 
@@ -158,42 +164,42 @@ def draw_layout_boxes(rgb_image, blocks):
 
     for b in blocks:
         x1, y1, x2, y2 = b.coordinates
-        cv2.rectangle(bgr, (x1, y1), (x2, y2), (0, 255, 255), 2)
+        cv2.rectangle(bgr, (x1, y1), (x2, y2), (0, 200, 80), 2)
         label = f"{b.type} ({b.score:.2f})"
         cv2.putText(
             bgr, label, (x1, max(15, y1 - 6)),
-            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 2, cv2.LINE_AA
+            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 200, 80), 2, cv2.LINE_AA
         )
 
     return cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
 
 def warm_up_models(layout_mode):
-    """Load models inside a visible, detailed 'loading screen'."""
-    with st.status("🚀 Warming up the models…", expanded=True) as status:
-        st.write("Loading the handwriting recognition model…")
+    """Load models inside a visible, detailed loading screen."""
+    with st.status("Warming up the models...", expanded=True) as status:
+        st.write("Loading the handwriting recognition model...")
         t0 = time.time()
         hw_model, classes = get_hw()
-        st.write(f"✓ Handwriting model ready · {len(classes)} character classes · {time.time() - t0:.1f}s")
+        st.write(f"Handwriting model ready, {len(classes)} character classes, {time.time() - t0:.1f}s")
 
         doc_model = None
         if layout_mode == "DocLayout-YOLO":
             st.write(
-                "Loading DocLayout-YOLO weights… "
+                "Loading DocLayout-YOLO weights... "
                 "_(first run downloads ~100 MB from Hugging Face and caches it)_"
             )
             t1 = time.time()
             doc_model = get_doclayout()
-            st.write(f"✓ Layout model ready · {time.time() - t1:.1f}s")
+            st.write(f"Layout model ready, {time.time() - t1:.1f}s")
 
-        status.update(label="✅ Models ready", state="complete", expanded=False)
+        status.update(label="Models ready", state="complete", expanded=False)
     return hw_model, classes, doc_model
 
 
 # ---------------------------------------------------------------------------
 # Sidebar controls
 # ---------------------------------------------------------------------------
-st.sidebar.header("⚙️ Options")
+st.sidebar.header("Options")
 
 layout_mode = st.sidebar.selectbox(
     "Layout Mode",
@@ -204,7 +210,7 @@ layout_mode = st.sidebar.selectbox(
 
 doc_conf = st.sidebar.slider("Layout sensitivity", 0.05, 0.95, 0.20, 0.05)
 
-st.sidebar.subheader("✍️ Handwriting Recognition")
+st.sidebar.subheader("Handwriting Recognition")
 min_contour_area = st.sidebar.slider("Min Contour Area", 10, 300, 50, 5)
 line_threshold_factor = st.sidebar.slider("Line Spacing Sensitivity", 0.5, 3.0, 1.0, 0.1)
 space_threshold_factor = st.sidebar.slider("Word Spacing Sensitivity", 0.1, 2.0, 0.4, 0.05)
@@ -223,7 +229,7 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is None:
-    st.info("👆 Upload a `.jpg`, `.jpeg`, or `.png` of handwritten notes to get started.")
+    st.info("Upload a `.jpg`, `.jpeg`, or `.png` of handwritten notes to get started.")
 else:
     pil_img = Image.open(uploaded_file).convert("RGB")
     rgb = np.array(pil_img)
@@ -232,10 +238,10 @@ else:
     col1, col2 = st.columns([1, 1])
 
     with col1:
-        st.subheader("Input")
+        st.subheader("Input", anchor=False)
         st.image(rgb, use_container_width=True)
 
-    if st.button("✨ Convert", type="primary", use_container_width=True):
+    if st.button("Convert", type="primary", use_container_width=True):
         # ---- Loading screen #1: models ----
         hw_model, classes, doc_model = warm_up_models(layout_mode)
 
@@ -245,22 +251,22 @@ else:
         final_text = ""
 
         # ---- Loading screen #2: the actual analysis ----
-        with st.status("🔎 Analyzing your notes…", expanded=True) as status:
+        with st.status("Analyzing your notes...", expanded=True) as status:
             if layout_mode == "DocLayout-YOLO":
-                st.write("Detecting layout regions with DocLayout-YOLO…")
+                st.write("Detecting layout regions with DocLayout-YOLO...")
                 raw_blocks = detect_layout_doclayout(
                     rgb, doc_model, conf=doc_conf, device="cpu", imgsz=1024
                 )
                 layout_blocks = suppress_overlapping_blocks(raw_blocks, iou_thresh=0.6)
-                st.write(f"✓ Found {len(layout_blocks)} region(s) after overlap filtering")
+                st.write(f"Found {len(layout_blocks)} region(s) after overlap filtering")
 
                 total = max(1, len(layout_blocks))
-                progress = st.progress(0.0, text="Reading handwriting…")
+                progress = st.progress(0.0, text="Reading handwriting...")
 
                 for i, block in enumerate(layout_blocks):
                     progress.progress(
                         (i) / total,
-                        text=f"Reading region {i + 1}/{len(layout_blocks)} · {block.type}",
+                        text=f"Reading region {i + 1}/{len(layout_blocks)} - {block.type}",
                     )
 
                     region_rgb = crop_rgb_doc(rgb, block.coordinates)
@@ -307,7 +313,7 @@ else:
                 final_text = "\n\n".join(md_blocks) if md_blocks else ""
 
             else:
-                st.write("Running OCR on the whole image…")
+                st.write("Running OCR on the whole image...")
                 final_text, dbg = ocr_char_level(
                     bgr, hw_model, classes,
                     min_contour_area=min_contour_area,
@@ -320,11 +326,11 @@ else:
                     "image": cv2.cvtColor(dbg, cv2.COLOR_BGR2RGB),
                 }] if dbg is not None else []
 
-            status.update(label="✅ Analysis complete", state="complete", expanded=False)
+            status.update(label="Analysis complete", state="complete", expanded=False)
 
         # ---- Output ----
         with col2:
-            st.subheader("Output")
+            st.subheader("Output", anchor=False)
             if final_text.strip():
                 tab_render, tab_source = st.tabs(["Rendered", "Markdown source"])
                 with tab_render:
@@ -332,7 +338,7 @@ else:
                 with tab_source:
                     st.code(final_text, language="markdown")
                     st.download_button(
-                        "⬇️ Download Markdown",
+                        "Download Markdown",
                         data=final_text,
                         file_name="notes.md",
                         mime="text/markdown",
@@ -342,7 +348,7 @@ else:
 
         # ---- Visualizations ----
         st.markdown("---")
-        st.subheader("Detection Visualizations")
+        st.subheader("Detection Visualizations", anchor=False)
 
         vis_col1, vis_col2 = st.columns([1, 1])
 
